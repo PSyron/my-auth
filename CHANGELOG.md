@@ -7,7 +7,13 @@ The tested cross-library pins live only in the
 
 ## Unreleased
 
-- Align the nested app-factory source with `v0.7.2`.
+## 0.5.7
+
+- Use app-factory's bundled Lism primitives for panel centering and form/content
+  stacking while keeping Basecoat component anatomy and Tailwind utilities.
+- Require and pin app-factory `v0.7.9`; no host CSS build or vendored layout asset.
+- Verify full-width headers, panel width, centering and action gaps at mobile
+  and desktop widths without client-side scripts.
 
 ## 0.5.6
 

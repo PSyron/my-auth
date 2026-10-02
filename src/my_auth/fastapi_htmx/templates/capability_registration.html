@@ -13,9 +13,9 @@
 {% block loading_label %}{{ t.loading }}{% endblock %}
 
 {% block identity_panel %}
-  <div class="passkey-shell" data-platform-identity-ceremony="{{ 'activation' if is_activation else 'recovery' }}">
+  <div class="passkey-shell l--center" data-platform-identity-ceremony="{{ 'activation' if is_activation else 'recovery' }}">
     <section class="card passkey-card" aria-labelledby="passkey-page-title">
-      <header class="passkey-card__header">
+      <header class="passkey-card__header l--stack">
         <p class="badge passkey-eyebrow" data-variant="secondary">
           {{ t.activation_eyebrow if is_activation else t.recovery_eyebrow }}
         </p>
@@ -26,11 +26,11 @@
           {{ t.activation_description if is_activation else t.recovery_description }}
         </p>
       </header>
-      <section class="passkey-card__content">
+      <section class="passkey-card__content l--stack">
         {% if capability_valid %}
           <form
             id="passkey-capability-form"
-            class="passkey-form"
+            class="passkey-form l--stack"
             method="post"
             action="{{ paths.register_verify }}"
             data-passkey-form="register"

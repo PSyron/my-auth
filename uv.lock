@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.12' and sys_platform == 'emscripten'",
@@ -39,8 +39,8 @@ wheels = [
 
 [[package]]
 name = "app-factory"
-version = "0.7.2"
-source = { git = "https://github.com/mikolaj92/app-factory?tag=v0.7.2#b9ba8d14ba2cd8e8ad4584a01db81ae846e27109" }
+version = "0.7.9"
+source = { git = "https://github.com/mikolaj92/app-factory?tag=v0.7.9#eea39ae621eefe6a681f905a954abe016aef724b" }
 dependencies = [
     { name = "jinja2" },
 ]
@@ -547,7 +547,7 @@ wheels = [
 
 [[package]]
 name = "my-auth"
-version = "0.5.6"
+version = "0.5.7"
 source = { editable = "." }
 dependencies = [
     { name = "typing-extensions" },
@@ -589,7 +589,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "app-factory", extras = ["fastapi"], marker = "extra == 'fastapi-htmx'", git = "https://github.com/mikolaj92/app-factory?tag=v0.7.2" },
+    { name = "app-factory", extras = ["fastapi"], marker = "extra == 'fastapi-htmx'", git = "https://github.com/mikolaj92/app-factory?tag=v0.7.9" },
     { name = "authlib", marker = "extra == 'fastapi'", specifier = ">=1.8.0" },
     { name = "authlib", marker = "extra == 'oidc'", specifier = ">=1.8.0" },
     { name = "fastapi", marker = "extra == 'fastapi'", specifier = ">=0.141.1" },
@@ -606,7 +606,7 @@ provides-extras = ["fastapi", "fastapi-htmx", "oidc", "browser"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "app-factory", extras = ["fastapi"], git = "https://github.com/mikolaj92/app-factory?tag=v0.7.2" },
+    { name = "app-factory", extras = ["fastapi"], git = "https://github.com/mikolaj92/app-factory?tag=v0.7.9" },
     { name = "authlib", specifier = ">=1.8.0" },
     { name = "basedpyright", specifier = ">=1.21" },
     { name = "fastapi", specifier = ">=0.141.1" },

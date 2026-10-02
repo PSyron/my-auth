@@ -18,8 +18,6 @@
  */
 .passkey-shell {
   box-sizing: border-box;
-  display: grid;
-  place-items: center;
   width: 100%;
   flex: 1 1 auto;
   min-height: min(100%, calc(100dvh - 3.5rem));
@@ -87,17 +85,16 @@ body.app-shell .app-main #main-content,
 }
 
 .passkey-card {
-  width: min(100%, var(--passkey-card-width, 28rem));
+  width: var(--passkey-card-width, 28rem);
+  max-width: 100%;
   margin-inline: auto;
 }
 
-/* Basecoat 1.0 pads .card > header|section; keep form stacks tight.
- * Fallback padding if a host ships pre-1.0 class names without semantic tags. */
+/* Lism owns panel/form layout; Basecoat owns component padding. */
 .passkey-card__header,
 .passkey-card__content,
 .passkey-form {
-  display: grid;
-  gap: var(--passkey-panel-gap, 1rem);
+  --layout-gap: var(--passkey-panel-gap, 1rem);
 }
 
 .passkey-card:not(:has(> header)):not(:has(> section)) {

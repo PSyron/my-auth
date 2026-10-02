@@ -1,16 +1,16 @@
 {# Basecoat 1.0 pads .card > header|section|footer — not .card-header/.card-content. #}
 <section class="card passkey-card" aria-labelledby="passkey-page-title">
-  <header class="passkey-card__header">
+  <header class="passkey-card__header l--stack">
     <p class="badge passkey-eyebrow" data-variant="secondary">{{ t.register_eyebrow }}</p>
     <h1 id="passkey-page-title" class="card-title">{{ t.register_heading }}</h1>
     <p class="card-description">
       {{ t.register_description }}
     </p>
   </header>
-  <section class="passkey-card__content">
+  <section class="passkey-card__content l--stack">
     <form
       id="passkey-register-form"
-      class="passkey-form"
+      class="passkey-form l--stack"
       method="post"
       action="{{ paths.register_verify }}"
       data-passkey-form="register"
