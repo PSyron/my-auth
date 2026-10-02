@@ -62,10 +62,10 @@ def test_changelog_current_tag_absorbs_post_055_work() -> None:
     version = project["project"]["version"]
     headings = re.findall(r"^## (.+)$", changelog, flags=re.MULTILINE)
 
-    assert version == "0.5.6"
+    assert version == "0.5.7"
     assert headings[0] == "Unreleased"
     assert headings[1] == version
-    assert headings[2] == "0.5.5"
+    assert headings[2] == "0.5.6"
     assert headings == ["Unreleased"] + sorted(
         headings[1:],
         key=lambda item: tuple(int(part) for part in item.split(".")),
@@ -75,7 +75,10 @@ def test_changelog_current_tag_absorbs_post_055_work() -> None:
     unreleased_body = changelog.split("## Unreleased", 1)[1].split(f"## {version}", 1)[
         0
     ]
-    tagged_body = changelog.split(f"## {version}", 1)[1].split("## ", 1)[0]
+    current_body = changelog.split(f"## {version}", 1)[1].split("## ", 1)[0]
+    assert "Lism" in current_body
+    assert "v0.7.9" in current_body
+    tagged_body = changelog.split("## 0.5.6", 1)[1].split("## ", 1)[0]
     previous_body = changelog.split("## 0.5.5", 1)[1].split("## ", 1)[0]
 
     already_in_055 = (
@@ -89,7 +92,7 @@ def test_changelog_current_tag_absorbs_post_055_work() -> None:
         "(#111)",
     )
     absorbed = ("(#105)", "(#107)", "(#108)", "(#113)")
-    assert "v0.7.2" in unreleased_body
+    assert not unreleased_body.strip()
     assert "still reports" not in changelog
     assert "(#114)" not in changelog
     for marker in absorbed:

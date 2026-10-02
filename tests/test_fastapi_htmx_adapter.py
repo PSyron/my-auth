@@ -132,12 +132,16 @@ def test_repository_app_factory_pin_matches_lock() -> None:
     project = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     lock = tomllib.loads((REPO_ROOT / "uv.lock").read_text(encoding="utf-8"))
 
-    assert project["tool"]["uv"]["sources"]["app-factory"]["tag"] == "v0.7.2"
+    assert project["tool"]["uv"]["sources"]["app-factory"]["tag"] == "v0.7.9"
     app_factory = next(
         package for package in lock["package"] if package["name"] == "app-factory"
     )
-    assert app_factory["version"] == "0.7.2"
-    assert "tag=v0.7.2" in app_factory["source"]["git"]
+    assert app_factory["version"] == "0.7.9"
+    assert "tag=v0.7.9" in app_factory["source"]["git"]
+    assert (
+        "app-factory[fastapi]>=0.7.9"
+        in project["project"]["optional-dependencies"]["fastapi-htmx"]
+    )
 
 
 def test_public_api_has_only_installer_contract() -> None:
@@ -194,6 +198,52 @@ def test_readme_htmx_host_recipe_uses_identity_adapters() -> None:
     assert readme.count("install_passkey_ui") == 2
 
 
+@pytest.mark.parametrize("width", [390, 1200])
+def test_login_layout_keeps_header_full_width_and_panel_centered(width: int) -> None:
+    playwright = pytest.importorskip("playwright.sync_api")
+    app, _, _ = _app()
+    client = TestClient(app)
+    with playwright.sync_playwright() as driver:
+        browser = driver.chromium.launch(headless=True)
+        page = browser.new_page(viewport={"width": width, "height": 900})
+
+        def serve(route):
+            path = route.request.url.split("http://localhost", 1)[1]
+            if path.endswith(".js"):
+                route.fulfill(body="", content_type="application/javascript")
+                return
+            response = client.get(path)
+            route.fulfill(
+                status=response.status_code,
+                body=response.content,
+                content_type=response.headers.get("content-type", "text/html"),
+            )
+
+        page.route("**/*", serve)
+        page.goto("http://localhost/login")
+        geometry = page.evaluate("""() => {
+          const panel = document.querySelector('.passkey-card').getBoundingClientRect();
+          const header = document.querySelector('.app-main-header').getBoundingClientRect();
+          const shell = document.querySelector('.passkey-shell').getBoundingClientRect();
+          const form = document.querySelector('.passkey-form');
+          const actions = [...form.querySelectorAll('button')].map(el => el.getBoundingClientRect());
+          return { viewport: innerWidth, document: document.documentElement.scrollWidth,
+            header: header.width, center: panel.x + panel.width / 2,
+            panelWidth: panel.width, panelCenterY: panel.y + panel.height / 2,
+            shellCenterY: shell.y + shell.height / 2,
+            form: getComputedStyle(form).display,
+            spacing: actions[1].top - actions[0].bottom };
+        }""")
+        browser.close()
+    assert geometry["document"] <= width
+    assert geometry["header"] == pytest.approx(width, abs=1)
+    assert geometry["center"] == pytest.approx(width / 2, abs=1)
+    assert geometry["panelWidth"] == pytest.approx(min(width - 48, 448), abs=1)
+    assert geometry["panelCenterY"] == pytest.approx(geometry["shellCenterY"], abs=1)
+    assert geometry["form"] == "flex"
+    assert geometry["spacing"] == pytest.approx(16, abs=1)
+
+
 def test_packaged_css_centers_passkey_panel_in_app_factory_shell() -> None:
     css = (
         files("my_auth.fastapi_htmx")
@@ -202,7 +252,11 @@ def test_packaged_css_centers_passkey_panel_in_app_factory_shell() -> None:
     )
 
     assert ".passkey-shell" in css
-    assert "place-items: center" in css
+    assert "place-items: center" not in css
+    assert (
+        ".l--center"
+        in files("app_factory").joinpath("assets/lism-layout.css").read_text()
+    )
     # Full-width header: do not grid-center the entire .app-main when a top bar exists.
     assert ".app-main:has(> .app-main-header):has(.passkey-card)" in css
     assert "flex-direction: column" in css
@@ -213,7 +267,7 @@ def test_login_and_register_templates_wrap_panel_in_passkey_shell() -> None:
     package = files("my_auth.fastapi_htmx")
     for name in ("templates/login.html", "templates/register.html"):
         html = package.joinpath(name).read_text(encoding="utf-8")
-        assert 'class="passkey-shell"' in html
+        assert 'class="passkey-shell l--center"' in html
 
 
 def test_packaged_pages_use_app_factory_shell_not_legacy_standalone_base() -> None:
@@ -735,7 +789,7 @@ def test_packaged_css_forces_full_width_header_on_app_shell() -> None:
     assert "align-self: stretch" in css
     # place-items centers only the panel, never the whole main column.
     assert ".passkey-shell" in css
-    assert "place-items: center" in css
+    assert "place-items: center" not in css
     assert (
         ".app-main:has(.passkey-card) {\n  display: grid;\n  place-items: center"
         not in css

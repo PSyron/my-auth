@@ -19,12 +19,20 @@ compare-and-set sign counters, and optional FastAPI/Jinja/HTMX adapters. It
 does **not** provide application sessions, CSRF middleware, admin policy, local
 user models, or audit policy.
 
+## Shared presentation
+
+Passkey panels use Basecoat components and app-factory's bundled Lism layout
+primitives (`l--center`, `l--stack`). The factory serves the pinned stylesheet
+same-origin; this package does not copy it or ship a separate layout engine.
+Keep theme/header shell glue separate from panel layout and use existing
+primitives instead of adding handwritten flex/grid containers.
+
 ## Install and imports
 
 ```sh
-uv add "my-auth @ git+https://github.com/mikolaj92/my-auth.git@v0.5.6"
-uv add "my-auth[oidc] @ git+https://github.com/mikolaj92/my-auth.git@v0.5.6"
-uv add "my-auth[fastapi-htmx] @ git+https://github.com/mikolaj92/my-auth.git@v0.5.6"
+uv add "my-auth @ git+https://github.com/mikolaj92/my-auth.git@v0.5.7"
+uv add "my-auth[oidc] @ git+https://github.com/mikolaj92/my-auth.git@v0.5.7"
+uv add "my-auth[fastapi-htmx] @ git+https://github.com/mikolaj92/my-auth.git@v0.5.7"
 ```
 
 Pin the immutable 0.5.x tag selected by the platform BOM. Hosts should use
@@ -33,11 +41,11 @@ The OpenID Provider extra is `my-auth[oidc]`; `my-auth[fastapi]` remains an
 identical compatibility alias. `PasskeyRouteHooks.rate_limit`,
 `PASSKEY_ORIGINS`, and `PasskeyUiConfig(conditional_ui=True)` are in this tag.
 
-This repository uses app-factory tag `v0.7.2` to test the optional HTMX
+This repository uses app-factory tag `v0.7.9` to test the optional HTMX
 adapter. It is a library, not a production host using `app-factory[platform]`,
-so the [platform host compatibility matrix](https://github.com/mikolaj92/app-factory/blob/v0.7.2/COMPAT.md)
+so the [platform host compatibility matrix](https://github.com/mikolaj92/app-factory/blob/v0.7.9/COMPAT.md)
 does not define this package's version. The published `fastapi-htmx` extra
-requires the compatible `app-factory>=0.7.2` generation.
+requires `app-factory>=0.7.9`, which supplies the Lism layout asset.
 
 The core import is `my_auth`. The FastAPI router is explicitly imported from
 `my_auth.fastapi`; the server-rendered UI is explicitly imported from
